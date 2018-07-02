@@ -7,14 +7,14 @@ import vcf, yaml #pip install pyvcf, pyyaml
 VERSION = '0.1'
 config = yaml.load(open('config.yaml')) #exacServer, snpEffJar
 
-vcfFieldNames = ['CHROM', 'POS', 'REF', 'ALT', 'QUAL', 'FILTER',
+vcfFieldNames = ['CHROM', 'POS', 'REF', 'ALT', # 'QUAL', 'FILTER',
     'depthOfCoverage', 'readsOfAlt', 'percOfAlt']
 def getVcfFields(x):
     """get a list of values from original vcf row."""
     depth = x.INFO['DP']
     readsAlt = x.INFO['AO'][0] #only report the first alt
     percAlt = readsAlt/(readsAlt + x.INFO['RO'])
-    return [x.CHROM, x.POS, x.REF, x.ALT[0], x.QUAL, x.FILTER,
+    return [x.CHROM, x.POS, x.REF, x.ALT[0], # x.QUAL, x.FILTER,
         depth, readsAlt, percAlt]
 
 snpEffFieldNames = ['EFFECT', 'IMPACT','GENENAME', 'GENEID',

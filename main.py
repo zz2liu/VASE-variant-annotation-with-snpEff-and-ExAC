@@ -38,20 +38,24 @@ def getExacFields(key, exacServer=config['exacServer']):
     AlleleFreq = exac['variant'].get('allele_freq')
     return [AlleleFreq]
 
-def main(snpEffJar=config['snpEffJar'], vcfFile=sys.stdin, outfile=sys.stdout):
+
+def main(snpEffJar, vcfFile=sys.stdin, outfile=sys.stdout):
     """the workflow from ori VCF file to annotated csv file
     """
-    # run snpEff, store intermediate result in tmp.ann.vcf
-    cmd = f'java -Xmx4g -jar {snpEffJar} GRCh37.75 > tmp.ann.vcf'
-    #print(cmd); breakpoint()
+    # run snpEff on vcfFile, store result in annFile
+    jar=config['snpEff']['jar']
+    params=config['snpEff']['params']
+    tmpVcf = 'tmp.ann.vcf'
+    cmd = f'''java -Xmx4g -jar {jar} ann {params} GRCh37.75 \
+        > {tmpVcf}'''
     subprocess.call(cmd, stdin=vcfFile, shell=True)
 
-    # write header
+    # prepare result file, write the header line
     csvOut = csv.writer(outfile)
     csvOut.writerow(vcfFieldNames + snpEffFieldNames + exacFieldNames)
 
-    # write a rec for each row
-    vcf_reader = vcf.Reader(open('tmp.ann.vcf'))
+    # write a rec for each row from the tmpAnnVcf file
+    vcf_reader = vcf.Reader(open(tmpVcf))
     for x in vcf_reader:
         vcfFields = getVcfFields(x)
 
@@ -65,8 +69,8 @@ def main(snpEffJar=config['snpEffJar'], vcfFile=sys.stdin, outfile=sys.stdout):
         csvOut.writerow(row)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Output a variant annotation file from snpEff annotated vcf file.',
-        epilog='--by Zongzhi Liu',
+    parser = argparse.ArgumentParser(description='A simple linux tool for variant annotation using snpEff and ExAC.',
+        epilog='--by Zongzhi Liu, home page: https://github.com/zz2liu/VASE-variant-annotation-with-snpEff-and-ExAC',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     #version
     parser.add_argument("--version", action="version",
@@ -77,7 +81,7 @@ if __name__ == '__main__':
         help='The original vcf file')
 
     #optionals
-    parser.add_argument('-s', '--snpEffJar', default=config['snpEffJar'], 
+    parser.add_argument('-s', '--snpEffJar', default=config['snpEff']['jar'], 
         help='Path/to/snpEff.jar file. Default value is defined in config.yaml file.')
     parser.add_argument('-o', '--outfile', type=argparse.FileType('w'),
         default=sys.stdout, help=argparse.SUPPRESS) #'output file')

@@ -1,4 +1,0 @@
-> /tank/home/zongzhi/projects/code/interview/tempus/main.py(47)main()
--> subprocess.call(cmd, stdin=vcfFile)
-(Pdb) (Pdb) --KeyboardInterrupt--
-(Pdb) (Pdb) 

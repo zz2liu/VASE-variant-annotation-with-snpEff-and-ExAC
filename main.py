@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import sys, argparse;  sys.version_info >= (3, 5) or sys.exit('Require python 3.5+')
 import csv, json, subprocess
-import vcf #pip install pyvcf; OR conda install -c bioconda pyvcf
 from urllib.request import urlopen
+import vcf, yaml #pip install pyvcf, pyyaml
+
 VERSION = '0.1'
-#config = json.load('config.json')
+config = yaml.load(open('config.yaml')) #exacServer, snpEffJar
 
 vcfFieldNames = ['CHROM', 'POS', 'REF', 'ALT', 'QUAL', 'FILTER',
     'depthOfCoverage', 'readsOfAlt', 'percOfAlt']
@@ -28,9 +29,8 @@ def getSnpEffFields(ann):
     return [firstAnn[EFFECT], firstAnn[IMPACT],firstAnn[GENENAME],firstAnn[GENEID],
             firstAnn[HGVSc], firstAnn[HGVSp]]
 
-exacServer = 'http://exac.hms.harvard.edu'
 exacFieldNames = ['exacAlleleFreq']
-def getExacFields(key):
+def getExacFields(key, exacServer=config['exacServer']):
     """get a list of values from ExAC variant annotation if any"""
     url = f'{exacServer}/rest/variant/{key}'
     exac = json.load(urlopen(url))
@@ -38,7 +38,7 @@ def getExacFields(key):
     AlleleFreq = exac['variant'].get('allele_freq')
     return [AlleleFreq]
 
-def main(snpEffJar, vcfFile=sys.stdin, outfile=sys.stdout):
+def main(snpEffJar=config['snpEffJar'], vcfFile=sys.stdin, outfile=sys.stdout):
     """the workflow from ori VCF file to annotated csv file
     """
     # run snpEff, store intermediate result in tmp.ann.vcf
@@ -73,13 +73,12 @@ if __name__ == '__main__':
         version="%(prog)s "+VERSION)
 
     # positional args
-    parser.add_argument('snpEffJar',
-        help='Path/to/snpEff.jar')
     parser.add_argument('vcfFile', type=argparse.FileType('r'),
         help='The original vcf file')
+
     #optionals
-    #parser.add_argument('-i', '--infile', type=argparse.FileType('r'),
-    #    default=sys.stdin, help=argparse.SUPPRESS) #'output file')
+    parser.add_argument('-s', '--snpEffJar', default=config['snpEffJar'], 
+        help='Path/to/snpEff.jar file. Default value is defined in config.yaml file.')
     parser.add_argument('-o', '--outfile', type=argparse.FileType('w'),
         default=sys.stdout, help=argparse.SUPPRESS) #'output file')
 

@@ -1,7 +1,9 @@
-# VASE: A simple *V*ariant *A*nnotation tool using *S*npEff and *E*xAC.
+# *VASE*: A simple *V*ariant *A*nnotation tool using *S*npEff and *E*xAC.
+
+A linux command line tool for simple variant annotations.
 
 ## Installation
-- Download and Install snpEff [link] (Java is required) and download the data for GRCh37.75
+- Download and Install [snpEff](http://snpeff.sourceforge.net) (Java is required) and download the data for GRCh37.75
     ```bash
     wget http://sourceforge.net/projects/snpeff/files/snpEff_latest_core.zip
     unzip snpEff_latest_core.zip
@@ -11,19 +13,15 @@
     java -jar snpEff.jar download GRCh37.75
     cd ..
     ```
-- Install python 3.7+ [link] and install the vcf parser `pip3.7 install pyvcf`
+- Install [python 3.5+](https://www.python.org/downloads/) and install the vcf parser `pip3 install pyvcf`
 - Download and extract this package to a folder
-- For a quick test, go to the package folder and run
-```bash
-    cd tests
-    python3.7 main.py test.vcf > out.csv
-```
 
-## Usage, from the package folder
-- modify config.yaml with a text editor if necessary
+## Usage
+- cd to the package folder
+- modify config.json with a text editor if necessary
 - then
 ```bash
-vase <vcffile> -o <outFile>
+python3 main.py <snpEffJar_file> <vcf_file> -o <outCsv_file>
 ```
 
 ## Implementation Notes

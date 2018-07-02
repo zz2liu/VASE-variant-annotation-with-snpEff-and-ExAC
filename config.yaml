@@ -1,0 +1,6 @@
+# The path to the snpEff.jar file.
+snpEffJar: "~/Downloads/Tempus/snpEff/snpEff.jar"
+
+# The URL root of the ExAC server
+exacServer: "http://exac.hms.harvard.edu"
+
